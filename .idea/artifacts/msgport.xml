@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="msgport">
+    <output-path>$PROJECT_DIR$/web/WEB-INF/lib</output-path>
+    <root id="archive" name="msgport.jar">
+      <element id="module-output" name="spring" />
+    </root>
+  </artifact>
+</component>

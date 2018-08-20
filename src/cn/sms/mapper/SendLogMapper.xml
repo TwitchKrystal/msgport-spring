@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sms.dao.SendLogMapper" >
+
+  <select id="testSelect" resultType="java.lang.Integer">
+    select 1 from dual
+  </select>
+  
+  <insert id="addMsg">
+	insert into 
+	msg1
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="sendLog.phoneNum != null">
+			PHONENUMBER,
+		</if>
+		<if test="sendLog.receivetime != null">
+			RECEIVETIME,
+		</if>
+		<if test="sendLog.readed != null">
+			READED,
+		</if>
+		<if test="sendLog.msgcontent != null">
+			MSGCONTENT,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+		<if test="sendLog.phoneNum != null">
+			#{sendLog.phoneNum},
+		</if>
+		<if test="sendLog.receivetime != null">
+			#{sendLog.receivetime},
+		</if>
+		<if test="sendLog.readed != null">
+			#{sendLog.readed},
+		</if>
+		<if test="sendLog.msgcontent != null">
+			#{sendLog.msgcontent},
+		</if>
+	</trim>
+  </insert>
+
+  
+  <select id="findMsg" resultType="cn.sms.model.MsgPort">
+  	select distinct * from (
+  		select phone_num.PHONENUM phoneNum,msg1.MSGCONTENT msgcontent,msg1.RECEIVETIME time,msg1.READED stute
+		from phone_num,msg1
+		where msg1.PHONENUMBER = phoneNum and phone_num.PHONENUM = #{phoneNum}
+		union all
+		select phone_num.PHONENUM phoneNum,respmsg1.DELIVEMSG msgcontent,respmsg1.DELIVETIME time,respmsg1.READED stute
+		from phone_num,respmsg1
+		where respmsg1.PHONENUMBER = phoneNum and phone_num.PHONENUM = #{phoneNum}) a 
+		ORDER BY a.time
+  </select>
+
+<select id="findAllMsg" resultType="cn.sms.model.PageInfoCS">
+  	SELECT
+	pn.PHONENUM phoneNum,
+	pn.IMPORTTIME importtime,
+	m.RECEIVETIME receivetime,
+	CASE	
+	WHEN ISNULL( rm.DELIVETIME ) 
+	THEN '失败'
+	ELSE '成功' 
+	END readed,
+	rm.DELIVETIME delivetime
+	FROM
+	phone_num pn LEFT JOIN
+	(SELECT PHONENUMBER, max(RECEIVETIME) RECEIVETIME FROM msg1 GROUP BY PHONENUMBER) m on m.PHONENUMBER = pn.PHONENUM
+	LEFT JOIN 
+	(SELECT PHONENUMBER, max(DELIVETIME) DELIVETIME FROM respmsg1 GROUP BY PHONENUMBER) rm
+	ON rm.PHONENUMBER = m.PHONENUMBER
+  </select>
+  
+  <select id="findAllMsgByNum" resultType="cn.sms.model.PageInfoCS">
+  	SELECT
+	pn.PHONENUM phoneNum,
+	pn.IMPORTTIME importtime,
+	m.RECEIVETIME receivetime,
+	CASE	
+	WHEN ISNULL( rm.DELIVETIME ) 
+	THEN '失败'
+	ELSE '成功' 
+	END readed,
+	rm.DELIVETIME delivetime
+	FROM
+	phone_num pn LEFT JOIN
+	(SELECT PHONENUMBER, max(RECEIVETIME) RECEIVETIME FROM msg1 GROUP BY PHONENUMBER) m on m.PHONENUMBER = pn.PHONENUM
+	LEFT JOIN 
+	(SELECT PHONENUMBER, max(DELIVETIME) DELIVETIME FROM respmsg1 GROUP BY PHONENUMBER) rm
+	ON rm.PHONENUMBER = m.PHONENUMBER
+	limit #{start},#{pageSize}
+  </select>
+  
+  <select id="findResultMsg" resultType="cn.sms.model.PageInfoCS">
+  	SELECT
+	pn.PHONENUM phoneNum,
+	pn.IMPORTTIME importtime,
+	m.RECEIVETIME receivetime,
+	CASE	
+	WHEN ISNULL( rm.DELIVETIME ) 
+	THEN '失败'
+	ELSE '成功' 
+	END readed,
+	rm.DELIVETIME delivetime
+	FROM
+	phone_num pn LEFT JOIN
+	(SELECT PHONENUMBER, max(RECEIVETIME) RECEIVETIME FROM msg1 GROUP BY PHONENUMBER) m on m.PHONENUMBER = pn.PHONENUM
+	LEFT JOIN 
+	(SELECT PHONENUMBER, max(DELIVETIME) DELIVETIME FROM respmsg1 GROUP BY PHONENUMBER) rm
+	ON rm.PHONENUMBER = m.PHONENUMBER
+	WHERE pn.PHONENUM = #{phoneNum}
+  </select>
+
+<select id="findTimeMsg" resultType="cn.sms.model.PageInfoCS">
+  	SELECT
+	pn.PHONENUM phoneNum,
+	pn.IMPORTTIME importtime,
+	m.RECEIVETIME receivetime,
+	CASE	
+	WHEN ISNULL( rm.DELIVETIME ) 
+	THEN '失败'
+	ELSE '成功' 
+	END readed,
+	rm.DELIVETIME delivetime
+	FROM
+	phone_num pn LEFT JOIN
+	(SELECT PHONENUMBER, max(RECEIVETIME) RECEIVETIME FROM msg1 GROUP BY PHONENUMBER) m on m.PHONENUMBER = pn.PHONENUM
+	LEFT JOIN 
+	(SELECT PHONENUMBER, max(DELIVETIME) DELIVETIME FROM respmsg1 GROUP BY PHONENUMBER) rm
+	ON rm.PHONENUMBER = m.PHONENUMBER
+	WHERE pn.IMPORTTIME BETWEEN #{sendTimeSelect} AND #{endTimeSelect}
+  </select>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sms.dao.SavePhoneMapper" >
+  
+  <insert id="addSavePhone">
+	insert into 
+	phone_num
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="savePhone.phoneNum != null">
+			PHONENUM,
+		</if>
+		<if test="savePhone.importtime != null">
+			IMPORTTIME,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+		<if test="savePhone.phoneNum != null">
+			#{savePhone.phoneNum},
+		</if>
+		<if test="savePhone.importtime != null">
+			#{savePhone.importtime},
+		</if>
+	</trim>
+  </insert>
+  
+  <select id="findSavePhone" resultType="java.lang.Integer">
+  	select count(*) from phone_num where PHONENUM = #{phoneNum}
+  </select>
+
+</mapper>

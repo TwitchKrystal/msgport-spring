@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.sms.dao.SaveRespMapper" >
+  
+  <insert id="addRespMsg">
+	insert into 
+	respmsg1
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		<if test="saveResp.number != null">
+			PHONENUMBER,
+		</if>
+		<if test="saveResp.msg != null">
+			DELIVEMSG,
+		</if>
+		<if test="saveResp.ti != null">
+			DELIVETIME,
+		</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides="," >
+		<if test="saveResp.number != null">
+			#{saveResp.number},
+		</if>
+		<if test="saveResp.msg != null">
+			#{saveResp.msg},
+		</if>
+		<if test="saveResp.ti != null">
+			#{saveResp.ti},
+		</if>
+	</trim>
+  </insert>
+
+
+</mapper>
